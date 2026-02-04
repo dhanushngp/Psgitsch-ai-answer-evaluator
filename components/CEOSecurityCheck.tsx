@@ -47,6 +47,18 @@ const CEOSecurityCheck: React.FC<CEOSecurityCheckProps> = ({ onVerifySuccess, on
         }
     };
 
+    const handleReset = () => {
+        if (window.confirm("Are you sure you want to reset the password to the default 'ceo112'?")) {
+            localStorage.removeItem('admin_code');
+            setSuccessMsg('Password reset to default (ceo112).');
+            setError('');
+            setTimeout(() => {
+                setIsChangingPassword(false);
+                setSuccessMsg('');
+            }, 1500);
+        }
+    };
+
     return (
         <div className="w-full max-w-sm mx-auto view-fade-in">
             <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-xl shadow-2xl p-8">
@@ -138,6 +150,14 @@ const CEOSecurityCheck: React.FC<CEOSecurityCheckProps> = ({ onVerifySuccess, on
                                 className="flex-1 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-green-500 transition-colors"
                             >
                                 Update
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleReset}
+                                className="px-4 border border-red-500/50 rounded-md text-sm font-medium text-red-400 bg-red-900/20 hover:bg-red-900/40 focus:outline-none transition-colors"
+                                title="Reset to default password"
+                            >
+                                Reset
                             </button>
                             <button
                                 type="button"
