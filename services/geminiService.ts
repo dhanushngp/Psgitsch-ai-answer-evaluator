@@ -2,37 +2,38 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { EvaluationResult } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable is not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const fileToGenerativePart = async (file: File) => {
-  const base64EncodedDataPromise = new Promise<string>((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-            resolve(reader.result.split(',')[1]);
-        } else {
-            // Handle ArrayBuffer case if necessary, though for data URLs it's usually a string
-            resolve('');
-        }
+    const base64EncodedDataPromise = new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+                resolve(reader.result.split(',')[1]);
+            } else {
+                // Handle ArrayBuffer case if necessary, though for data URLs it's usually a string
+                resolve('');
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+    const data = await base64EncodedDataPromise;
+    return {
+        inlineData: {
+            data,
+            mimeType: file.type,
+        },
     };
-    reader.readAsDataURL(file);
-  });
-  const data = await base64EncodedDataPromise;
-  return {
-    inlineData: {
-      data,
-      mimeType: file.type,
-    },
-  };
 };
 
 export const evaluateHandwriting = async (file: File): Promise<EvaluationResult> => {
+    // Lazy check for API key so the app doesn't crash on load
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+        throw new Error("API Key is missing. Please configure VITE_GEMINI_API_KEY.");
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
     const model = 'gemini-2.5-flash';
-    
+
     const filePart = await fileToGenerativePart(file);
 
     const prompt = "Analyze the provided document (JPEG, PNG, or PDF of handwritten notes). Identify all distinct question-and-answer pairs. For each answer, focus your evaluation primarily on its logical soundness and factual accuracy in relation to the question. Perform a light check for major grammatical errors, but do not heavily penalize for them. The specific format of the answer is not important. Assign a score from 0 to 10 for each answer based on this criteria, provide constructive feedback, and then calculate an overall average score. Return your entire analysis in the specified JSON format.";
@@ -107,7 +108,7 @@ export const evaluateHandwriting = async (file: File): Promise<EvaluationResult>
     } catch (error) {
         console.error("Error evaluating handwriting:", error);
         if (error instanceof Error) {
-           throw new Error(`Failed to evaluate document. API Error: ${error.message}`);
+            throw new Error(`Failed to evaluate document. API Error: ${error.message}`);
         }
         throw new Error("An unknown error occurred during AI evaluation.");
     }
