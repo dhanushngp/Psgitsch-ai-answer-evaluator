@@ -25,12 +25,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onSignup }) => {
             setError(result.message || 'An unknown error occurred.');
         }
     };
-    
+
     return (
         <div className="w-full max-w-md mx-auto">
             <header className="text-center mb-8">
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-                    Handwriting Evaluator <span className="text-blue-400">AI</span>
+                    AI Descriptive Answer Evaluator
                 </h1>
                 <p className="mt-2 text-lg text-slate-300">
                     {isLoginView ? 'Welcome back! Please sign in.' : 'Create an account to begin.'}
@@ -53,8 +53,8 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onSignup }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password"className="block text-sm font-medium text-slate-300">Password</label>
-                         <input
+                        <label htmlFor="password" className="block text-sm font-medium text-slate-300">Password</label>
+                        <input
                             id="password"
                             name="password"
                             type="password"
@@ -67,7 +67,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onSignup }) => {
                         />
                     </div>
 
-                     {error && <p className="text-sm text-red-400 bg-red-900/50 p-3 rounded-md text-center">{error}</p>}
+                    {error && <p className="text-sm text-red-400 bg-red-900/50 p-3 rounded-md text-center">{error}</p>}
 
                     <div>
                         <button
