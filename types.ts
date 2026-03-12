@@ -6,9 +6,16 @@ export enum AppState {
   ERROR,
 }
 
+export interface EvaluationHistoryItem {
+  timestamp: string;
+  score: number;
+  feedbackSummary: string;
+}
+
 export interface User {
   email: string;
   password?: string;
+  history?: EvaluationHistoryItem[];
 }
 
 export interface QAPair {
